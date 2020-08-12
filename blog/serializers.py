@@ -4,4 +4,4 @@ class BlogPostSerializer(serializers.ModelSerializer):
     """Создаёт новую запись блога"""
     class Meta:
         model = Post
-        fields = ('headline', 'pub_date', 'author', 'content',)
+        fields = ('id', 'headline', 'pub_date', 'author', 'content',)

@@ -35,6 +35,7 @@ TIME_ZONE = 'America/New_York'
 INSTALLED_APPS = [
     'test_auth',
     'blog',
+    'catalog',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -142,6 +143,10 @@ INTERNAL_IPS = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
         ),

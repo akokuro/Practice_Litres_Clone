@@ -12,7 +12,3 @@ methods_dict = {
 router = DefaultRouter()
 router.register(r'write', BlogViewSet, basename='Blog')
 urlpatterns = router.urls
-
-# urlpatterns = [
-#     re_path(r'^write/?$', BlogViewSet.as_view(), name='user_blog'),
-# ]

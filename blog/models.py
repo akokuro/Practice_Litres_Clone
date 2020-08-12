@@ -5,7 +5,7 @@ from django.db import models
 from test_auth.models import MyUser
 
 class BlogManager(models.Manager):
-    def create_post(self, headline, author, pub_date=None, content=None):
+    def create(self, headline, author, pub_date=None, content=None):
         if not headline:
             raise ValueError('Заголовок должно быть установлено')
         if not author:
@@ -14,14 +14,13 @@ class BlogManager(models.Manager):
         post.save(using=self._db)
         return post
         
-    def read_post(self, author):
+    def read(self, author):
         if not author:
             raise ValueError('Автор должен быть установлен')
-        posts = self.get(author=author)
+        posts = self.filter(author=author)
         return posts
 
-
-    def update_post(self, Id, content):
+    def update(self, Id, content):
         if not Id:
             raise ValueError('Автор должен быть установлен')
         post = self.get(id=Id)
@@ -29,10 +28,9 @@ class BlogManager(models.Manager):
             post.content = content
         post.save()
         return post
-
-    def delete_post(self, Id):
-        self.delete(id=Id)
     
+    def delete(self, Id):
+        self.filter(id=Id).delete()
 
 
 
@@ -44,7 +42,7 @@ class Post(models.Model):
     
     # Сообщает Django, что класс BlogManager, определенный выше, 
     # должен управлять объектами этого типа.
-    # objects = BlogManager()
+    objects = BlogManager()
 
     def __str__(self):
         return self.headline

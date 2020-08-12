@@ -46,7 +46,7 @@ class LoginSerializer(serializers.Serializer):
     Email and password are required.
     Returns a JSON web token.
     """
-    username = serializers.CharField(max_length=12,write_only=True)
+    username = serializers.CharField(max_length=30,write_only=True)
     password = serializers.CharField(max_length=12, write_only=True)
 
     # Ignore these fields if they are included in the request.
@@ -84,3 +84,7 @@ class LoginSerializer(serializers.Serializer):
         return {
             'token': user.token,
         }
+
+class ViewUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField( read_only=True)
+    username = serializers.CharField(max_length=30, read_only=True)
