@@ -22,7 +22,7 @@ class BlogManager(models.Manager):
 
     def update(self, Id, content):
         if not Id:
-            raise ValueError('Автор должен быть установлен')
+            raise ValueError('Id должен быть установлен')
         post = self.get(id=Id)
         if content:
             post.content = content

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'test_auth',
     'blog',
     'catalog',
+    'personal_catalog',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',

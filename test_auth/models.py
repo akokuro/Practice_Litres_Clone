@@ -73,6 +73,10 @@ class UserManager(BaseUserManager):
     def make_random_password(self):
         return get_random_string(12)
 
+    def get_user_from_token(self, token):
+        _id = jwt.decode(token)
+        return self.filter(id=_id)
+
 
 class MyUser(AbstractBaseUser, PermissionsMixin):
     """
