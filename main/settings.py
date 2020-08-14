@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'blog',
     'catalog',
     'personal_catalog',
+    'comment',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',

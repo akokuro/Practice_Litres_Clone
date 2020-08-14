@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('test_auth.urls')),
     path('', include('blog.urls')),
     path('', include('catalog.urls')),
-    path('', include('personal_catalog.urls'))
+    path('', include('personal_catalog.urls')),
+    path('', include('comment.urls'))
 ]
