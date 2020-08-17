@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser
 
 from .models import Book
 from .serializers import CatalogSerializer
@@ -17,28 +17,30 @@ from test_auth.serializers import ViewUserSerializer
 from rest_framework import viewsets
 
 class CatalogViewSet(viewsets.ModelViewSet):
-    """Блог пользователя
-    Доступен только авторизованным пользователям"""
-    # authentication_classes = [JWTAuthentication]
-    # permission_classes = [IsAuthenticated]
+    """Каталог книг"""
     permission_classes = [AllowAny]
     renderer_classes = [JSONRenderer]
     queryset = Book.objects.all()
     serializer_class = CatalogSerializer
 
+    def get_permissions(self):
+        """Настраивает доступ: get-запросы доступны любому, а остальные - только администратору"""
+        if self.action == 'list' or self.action == 'retrieve':
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
+
     def list(self, request, **kwargs):
+        """Возвращает список всех книг в каталоге"""
         books = Book.objects.read()
         serializer = self.serializer_class(books, many=True)
         return Response(serializer.data)
 
-    def destroy(self, request, pk=None, **kwargs):
-        Book.objects.delete(Id=pk)
-        return Response(status=status.HTTP_200_OK)
-
 class FillDbAPIView(APIView):
     """ Заполнение таблицы книг 
-    Доступен всем пользователям"""
-    permission_classes = [AllowAny]
+    Доступен администратору"""
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         """ Вносит данные в таблицу книг, если данная таблица пуста"""

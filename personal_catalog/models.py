@@ -3,6 +3,7 @@ from test_auth.models import MyUser
 from catalog.models import Book
 
 class ReadedBookManager(models.Manager):
+    """Менеджер объектов класса ReadedBook"""
     def create(self, user_id, book_id):
         if not user_id:
             raise ValueError('Пользователь должен быть установлен')
@@ -20,9 +21,11 @@ class ReadedBookManager(models.Manager):
         self.filter(id=Id).delete()
 
 class WantedBookManager(ReadedBookManager):
+    """Менеджер объектов класса WantedBook"""
     pass
 
 class ReadedBook(models.Model):
+    """Модель прочитанной книги"""
     user_id = models.ForeignKey(to=MyUser, on_delete=models.CASCADE)
     book_id = models.ForeignKey(to=Book, on_delete=models.CASCADE)
     # Сообщает Django, что класс BlogManager, определенный выше, 
@@ -30,6 +33,7 @@ class ReadedBook(models.Model):
     objects = ReadedBookManager()
 
 class WantedBook(models.Model):
+    """Модель книги, которую пользователь хочет прочитать"""
     user_id = models.ForeignKey(to=MyUser, on_delete=models.CASCADE)
     book_id = models.ForeignKey(to=Book, on_delete=models.CASCADE)
     # Сообщает Django, что класс BlogManager, определенный выше, 

@@ -7,6 +7,10 @@ from bs4 import BeautifulSoup
 
 class Parser:
     def get_words(self):
+        """Парсит слова
+        Добавляет в список nouns, если часть речи - существительное
+        Добавляет в список adjectives, если часть речи - прилагательное
+        Возвращает оба списка"""
         pattern = {"word": r"<td><b>([a-zA-Z]+) ?</b></td>",
                     "part of speech": r"<td>([a-zA-Z]+)</td>"}
         url = "https://satvocabulary.us/INDEX.ASP?CATEGORY=6000LIST"
@@ -107,11 +111,13 @@ class WordsDatabase:
             raise
 
 class NameGeneration:
+    """Генерация имени"""
     @staticmethod
     def gen():
+        """Генерирует случайное имя из прилагательного и существительного"""
         wordDB = WordsDatabase()
         noun_id = random.randint(0, 2445)
         adjective_id = random.randint(0, 1914)
-        name = wordDB.get_data_from_table("nouns", noun_id)
-        name += wordDB.get_data_from_table("adjectives", adjective_id)
+        name = wordDB.get_data_from_table("adjectives", adjective_id)
+        name += wordDB.get_data_from_table("nouns", noun_id)
         return name

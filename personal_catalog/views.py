@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import ReadedBookSerializer, WantedBookSerializer
 
@@ -19,72 +19,71 @@ from test_auth.backends import JWTAuthentication
 from test_auth.serializers import ViewUserSerializer
 
 def add_book_in_personal_catalog(request, manager):
+    """Добавляет книгу, используя переданный manager, если её ещё нет у пользователя"""
     user = request.user
     book = Book.objects.filter(title=request.query_params[""])
     if not manager.filter(user_id=user, book_id=book[0]):
         manager.create(user, book[0])
 
 class  AddInPersonalCatalogAPIView(APIView):
-    """ Заполнение таблицы книг 
-    Доступен всем пользователям"""
-    permission_classes = [AllowAny]
+    """Добавление книги в персональный каталог
+    Доступен только авторизованным пользователям"""
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """ Вносит данные в таблицу книг, если данная таблица пуста """
+        """Добавляет книгу с названием, указанным в url, в список прочитанных, если параметр read равен true и возвращает статус 201,
+        иначе добавляет в список желаемых и возвращает статус 201
+        Если книга с указанным в url названием не найдена в бд, то возвращает ошибку 404"""
         if "" in request.query_params and request.query_params[""]:
-            if "read" in request.query_params and request.query_params["read"] == "true":
-                try:
+            try:
+                if "read" in request.query_params and request.query_params["read"] == "true":
                     add_book_in_personal_catalog(request, ReadedBook.objects)
-                    return Response(status=status.HTTP_201_CREATED)
-                except Exception:
-                    return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
-            else:
-                try:
+                else:
                     add_book_in_personal_catalog(request, WantedBook.objects)
-                    return Response(status=status.HTTP_201_CREATED)
-                except Exception:
-                    return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
+                return Response(status=status.HTTP_201_CREATED)
+            except Exception:
+                return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
 
+
+def delete_book(request, manager):
+    """Удаляет книгу с помощью менеджера manager"""
+    user = request.user
+    book = Book.objects.filter(title=request.query_params[""])
+    manager.filter(user_id=user, book_id=book[0]).delete()
 
 class  DeleteFromPersonalCatalogAPIView(APIView):
-    """ Заполнение таблицы книг 
-    Доступен всем пользователям"""
-    permission_classes = [AllowAny]
+    """Удаление книги из персонального каталога
+    Доступен только авторизованным пользователям"""
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """ Вносит данные в таблицу книг, если данная таблица пуста """
+        """Удаляет книгу с названием, указанным в url, из списка прочитанных, если параметр read равен true и возвращает статус 200,
+        иначе удаляет из списка желаемых и возвращает статус 200
+        Если книга с указанным в url названием не найдена в бд, то возвращает ошибку 404"""
         if "" in request.query_params and request.query_params[""]:
-            if "read" in request.query_params and request.query_params["read"] == "true":
-                try:
-                    user = request.user
-                    book = Book.objects.filter(title=request.query_params[""])
-                    ReadedBook.objects.filter(user_id=user, book_id=book[0]).delete()
-                    return Response(status=status.HTTP_200_OK)
-                except Exception:
-                    return Response("Прочитанная книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
-            else:
-                try:
-                    user = request.user
-                    book = Book.objects.filter(title=request.query_params[""])
-                    WantedBook.objects.filter(user_id=user, book_id=book[0]).delete()
-                    return Response(status=status.HTTP_200_OK)
-                except Exception:
-                    return Response("Книга с таким названием в желаемых не найдена", status=status.HTTP_404_NOT_FOUND)
+            try:
+                if "read" in request.query_params and request.query_params["read"] == "true":
+                    delete_book(request, ReadedBook.objects)
+                else:
+                    delete_book(request, WantedBook.objects)
+                return Response(status=status.HTTP_200_OK)
+            except Exception:
+                return Response("Прочитанная книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
+
+def get_book(request, manager, serializer):
+    """Получает книги при попощи менедждера manager и сериализует их с помощью serializer """
+    user = request.user
+    books = manager.filter(user_id=user)
+    return serializer(books, many=True)
 
 class  PersonalCatalogAPIView(APIView):
-    """ Заполнение таблицы книг 
-    Доступен всем пользователям"""
-    permission_classes = [AllowAny]
+    """Представление персонального каталога"""
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """ Вносит данные в таблицу книг, если данная таблица пуста """
+        """Возвращает список прочитанных пользователем книг, если параметр read равен true, иначе возвращает список желаемых"""
         if "read" in request.query_params and request.query_params["read"] == "true":
-            user = request.user
-            books = ReadedBook.objects.filter(user_id=user)
-            serializer = ReadedBookSerializer(books, many=True)
-            return Response(serializer.data)
+            serializer = get_book(request, ReadedBook.objects, ReadedBookSerializer)
         else:
-            user = request.user
-            books = WantedBook.objects.filter(user_id=user)
-            serializer = WantedBookSerializer(books, many=True)
-            return Response(serializer.data)
+            serializer = get_book(request, WantedBook.objects, WantedBookSerializer)
+        return Response(serializer.data)

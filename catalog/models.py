@@ -2,7 +2,9 @@ from django.db import models
 from test_auth.models import MyUser
 
 class CatalogManager(models.Manager):
+    """Менеджер объектов класса Book"""
     def create(self, title, author, description=None):
+        """Создаёт книгу и возвращает её"""
         if not title:
             raise ValueError('Заголовок должно быть установлено')
         if not author:
@@ -12,15 +14,18 @@ class CatalogManager(models.Manager):
         return book
         
     def read(self):
+        """Возвращает все книги"""
         books = self.all()
         return books
     
     def delete(self, Id):
+        """Удаляет книгу, id которой равен Id"""
         self.filter(id=Id).delete()
 
 
 
 class Book(models.Model):
+    """Модель книги"""
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
     description = models.CharField(max_length=4096)

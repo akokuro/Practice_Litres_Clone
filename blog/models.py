@@ -5,7 +5,9 @@ from django.db import models
 from test_auth.models import MyUser
 
 class BlogManager(models.Manager):
+    """Менеджер объектов класса Post"""
     def create(self, headline, author, pub_date=None, content=None):
+        """Создаёт запись блога и возвращает её"""
         if not headline:
             raise ValueError('Заголовок должно быть установлено')
         if not author:
@@ -15,12 +17,14 @@ class BlogManager(models.Manager):
         return post
         
     def read(self, author):
+        """Находит все записи автора author и возвращает их"""
         if not author:
             raise ValueError('Автор должен быть установлен')
         posts = self.filter(author=author)
         return posts
 
     def update(self, Id, content):
+        """Обновляет запись, id которой равен Id"""
         if not Id:
             raise ValueError('Id должен быть установлен')
         post = self.get(id=Id)
@@ -30,11 +34,13 @@ class BlogManager(models.Manager):
         return post
     
     def delete(self, Id):
+        """Удаляет запись, id которой равен Id"""
         self.filter(id=Id).delete()
 
 
 
 class Post(models.Model):
+    """Модель записи блога"""
     headline = models.CharField(max_length=255)
     pub_date = models.DateField()
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE)

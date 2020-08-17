@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import CommentSerializer
 from .models import Comment
@@ -24,15 +24,20 @@ from Levenshtein import distance
 
 
 class  WriteCommentAPIView(APIView):
-    """ Заполнение таблицы книг 
-    Доступен всем пользователям"""
-    permission_classes = [AllowAny]
+    """Создание нового комментария
+    Доступен только авторизованому пользователю"""
+    permission_classes = [IsAuthenticated]
     
     def post(self, request):
-        """ Вносит данные в таблицу книг, если данная таблица пуста """
+        """Создаёт новый комментарий
+        Если книги с указанным в url названием не найдена, возвращает ошибку 404
+        Если книга пользователем не прочитана, возвращает ошибку 403"""
         if "" in request.query_params and request.query_params[""]:
             user = request.user
-            book = Book.objects.filter(title=request.query_params[""])
+            try:
+                book = Book.objects.filter(title=request.query_params[""])
+            except Exception:
+                    return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
             if(ReadedBook.objects.filter(user_id=user, book_id=book[0])):
                 content = request.data.get("content")
                 Comment.objects.create(content, user, book[0])
@@ -41,16 +46,17 @@ class  WriteCommentAPIView(APIView):
                 return Response("Нельзя оставлять отзывы на непрочитанную книгу", status=status.HTTP_403_FORBIDDEN)
 
 def similar(a, b):
+    """Находит расстояние Левенштейна между строкой a и b"""
     return distance(a, b)
 
 
 class  GetLastSimilarBookCommentAPIView(APIView):
     """ Заполнение таблицы книг 
     Доступен всем пользователям"""
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """ Вносит данные в таблицу книг, если данная таблица пуста """
+        """Возвращает три последних комментария на книгу с самым похожим названием на указанное в url"""
         if "" in request.query_params and request.query_params[""]:
             books = Book.objects.read()
             books = list(sorted(books, key=lambda b : similar(request.query_params[""], b.title)))
