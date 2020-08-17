@@ -18,13 +18,11 @@ from test_auth.parsers import EverythingParser
 from test_auth.backends import JWTAuthentication
 from test_auth.serializers import ViewUserSerializer
 
-def create_readed_book(user, book):
-    readed_book = ReadedBook.objects.create(user, book)
-    readed_book.save()
-
-def create_wanted_book(user, book):
-    readed_book = WantedBook.objects.create(user, book)
-    readed_book.save()
+def add_book_in_personal_catalog(request, manager):
+    user = request.user
+    book = Book.objects.filter(title=request.query_params[""])
+    if not manager.filter(user_id=user, book_id=book[0]):
+        manager.create(user, book[0])
 
 class  AddInPersonalCatalogAPIView(APIView):
     """ Заполнение таблицы книг 
@@ -36,19 +34,13 @@ class  AddInPersonalCatalogAPIView(APIView):
         if "" in request.query_params and request.query_params[""]:
             if "read" in request.query_params and request.query_params["read"] == "true":
                 try:
-                    user = request.user
-                    book = Book.objects.filter(title=request.query_params[""])
-                    if not ReadedBook.objects.filter(user_id=user, book_id=book[0]):
-                        create_readed_book(user, book[0])
+                    add_book_in_personal_catalog(request, ReadedBook.objects)
                     return Response(status=status.HTTP_201_CREATED)
                 except Exception:
                     return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
             else:
                 try:
-                    user = request.user
-                    book = Book.objects.filter(title=request.query_params[""])
-                    if not WantedBook.objects.filter(user_id=user, book_id=book[0]):
-                        create_wanted_book(user, book[0])
+                    add_book_in_personal_catalog(request, WantedBook.objects)
                     return Response(status=status.HTTP_201_CREATED)
                 except Exception:
                     return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)

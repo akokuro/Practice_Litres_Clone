@@ -2,17 +2,23 @@ from django.db import models
 from test_auth.models import MyUser
 from catalog.models import Book
 
+from langdetect import detect
+from datetime import datetime
+from profanity_check import predict
+
 class CommentManager(models.Manager):
-    def create(self, content, pub_date_time, user_id, book_id):
+    def create(self, content, user_id, book_id):
         if not content:
             raise ValueError('Пустые комментарии недопустимы')
-        if not pub_date_time:
-            raise ValueError('Дата и время должны быть установлены')
+        if detect(content) != 'en':
+            raise ValueError('Комментарий должен быть написан на английском языке')
+        if predict([content])[0] == 1:
+            raise ValueError('Нецензурная лексика недопустима')
         if not user_id:
             raise ValueError('Пользователь должен быть установлен')
         if not book_id:
             raise ValueError('Книга должна быть установлена')
-        comment = self.model(content=content, pub_date_time=pub_date_time, user_id=user_id, book_id=book_id)
+        comment = self.model(content=content, pub_date_time=datetime.now(), user_id=user_id, book_id=book_id)
         comment.save(using=self._db)
         return comment
 

@@ -8,7 +8,6 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .serializers import CommentSerializer
-
 from .models import Comment
 
 from catalog.models import Book
@@ -24,16 +23,11 @@ from datetime import datetime
 from Levenshtein import distance
 
 
-def comment_save(content, user, book):
-    comment = Comment(content=content, pub_date_time=datetime.now(), user_id=user, book_id=book)
-    comment.save()
-
 class  WriteCommentAPIView(APIView):
     """ Заполнение таблицы книг 
     Доступен всем пользователям"""
     permission_classes = [AllowAny]
     
-
     def post(self, request):
         """ Вносит данные в таблицу книг, если данная таблица пуста """
         if "" in request.query_params and request.query_params[""]:
@@ -41,14 +35,13 @@ class  WriteCommentAPIView(APIView):
             book = Book.objects.filter(title=request.query_params[""])
             if(ReadedBook.objects.filter(user_id=user, book_id=book[0])):
                 content = request.data.get("content")
-                comment_save(content, user, book[0])
+                Comment.objects.create(content, user, book[0])
                 return Response(status=status.HTTP_201_CREATED)
             else:
                 return Response("Нельзя оставлять отзывы на непрочитанную книгу", status=status.HTTP_403_FORBIDDEN)
 
 def similar(a, b):
     return distance(a, b)
-
 
 
 class  GetLastSimilarBookCommentAPIView(APIView):
