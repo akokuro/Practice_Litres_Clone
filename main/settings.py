@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import sys
 import pymysql
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -33,20 +34,20 @@ TIME_ZONE = 'America/New_York'
 # Application definition
 
 INSTALLED_APPS = [
-    'test_auth',
-    'blog',
-    'catalog',
-    'personal_catalog',
-    'comment',
-    'crispy_forms',
-    'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.contenttypes',
     'django.contrib.staticfiles',
     'django_mysql',
+    'django_extensions',
     'rest_framework',
+    'blog',
+    'catalog',
+    'comment',
+    'test_auth',
+    'personal_catalog',
 ]
 
 MIDDLEWARE = [
@@ -96,7 +97,10 @@ DATABASES = {
 pymysql.version_info=(1,4,2,"final",0)
 pymysql.install_as_MySQLdb()
 
-
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+    }
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 

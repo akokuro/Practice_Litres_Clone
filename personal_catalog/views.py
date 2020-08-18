@@ -43,6 +43,7 @@ class  AddInPersonalCatalogAPIView(APIView):
                 return Response(status=status.HTTP_201_CREATED)
             except Exception:
                 return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
+        return Response("Название книги не указано", status=status.HTTP_404_NOT_FOUND)
 
 
 def delete_book(request, manager):
@@ -69,6 +70,7 @@ class  DeleteFromPersonalCatalogAPIView(APIView):
                 return Response(status=status.HTTP_200_OK)
             except Exception:
                 return Response("Прочитанная книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
+        return Response("Название книги не указано", status=status.HTTP_404_NOT_FOUND)
 
 def get_book(request, manager, serializer):
     """Получает книги при попощи менедждера manager и сериализует их с помощью serializer """

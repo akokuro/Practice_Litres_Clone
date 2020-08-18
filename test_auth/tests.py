@@ -18,9 +18,9 @@ class UserListViewTest(TestCase):
     def setUpTestData(cls):
         """Настройка контекста для теста"""
         number_of_users = 5
-        for author_num in range(number_of_users):
-            name = 'Username%s' % author_num
-            password = 'password%s' % author_num
+        for user_num in range(number_of_users):
+            name = 'Username%s' % user_num
+            password = 'password%s' % user_num
             user = {"username":name, "password":password}
             serializer = RegistrationSerializer(data=user)
             serializer.is_valid(raise_exception=True)

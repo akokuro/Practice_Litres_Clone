@@ -5,6 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "test personal_catalog",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "test",
+                "personal_catalog"
+            ],
+            "django": true
+        },
+
+        {
+            "name": "test blog",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "args": [
+                "test",
+                "blog"
+            ],
+            "django": true
+        },
+        {
             "name": "Python: Django",
             "type": "python",
             "request": "launch",

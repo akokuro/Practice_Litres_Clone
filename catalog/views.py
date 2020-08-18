@@ -35,7 +35,7 @@ class CatalogViewSet(viewsets.ModelViewSet):
         """Возвращает список всех книг в каталоге"""
         books = Book.objects.read()
         serializer = self.serializer_class(books, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class FillDbAPIView(APIView):
     """ Заполнение таблицы книг 

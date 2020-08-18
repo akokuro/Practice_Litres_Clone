@@ -40,10 +40,14 @@ class  WriteCommentAPIView(APIView):
                     return Response("Книга с таким названием не найдена", status=status.HTTP_404_NOT_FOUND)
             if(ReadedBook.objects.filter(user_id=user, book_id=book[0])):
                 content = request.data.get("content")
-                Comment.objects.create(content, user, book[0])
-                return Response(status=status.HTTP_201_CREATED)
+                try:
+                    Comment.objects.create(content, user, book[0])
+                    return Response(status=status.HTTP_201_CREATED)
+                except Exception as e:
+                    return Response(e.args[0], status.HTTP_403_FORBIDDEN)
             else:
                 return Response("Нельзя оставлять отзывы на непрочитанную книгу", status=status.HTTP_403_FORBIDDEN)
+        return Response("Не указали книгу", status=status.HTTP_404_NOT_FOUND)
 
 def similar(a, b):
     """Находит расстояние Левенштейна между строкой a и b"""
@@ -71,4 +75,5 @@ class  GetLastSimilarBookCommentAPIView(APIView):
             if len(comments) > 3:
                 comments = comments[:3]
             serializer = CommentSerializer(comments, many=True)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response("Не указали книгу", status=status.HTTP_404_NOT_FOUND)
