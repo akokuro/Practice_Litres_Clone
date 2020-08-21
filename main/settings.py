@@ -27,7 +27,7 @@ SECRET_KEY = '7!!7jlh76!u5h0ilu==jjzd=9(&f9)frnpr1fhx=v76af83_1&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 TIME_ZONE = 'America/New_York'
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'comment',
     'test_auth',
     'personal_catalog',
+    'gunicorn'
 ]
 
 MIDDLEWARE = [
@@ -79,8 +80,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'main.wsgi.application'
-
-ALLOWED_HOSTS = ['127.0.0.1']
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
