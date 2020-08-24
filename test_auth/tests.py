@@ -28,27 +28,13 @@ class UserListViewTest(TestCase):
 
     def signup(self, name, password):
         """Регистрация пользователя с именем name и паролем password"""
-        resp = self.client.post('/signup/', data={'username': name, 'password': password}) 
+        resp = self.client.post('/register/', data={'username': name, 'password': password}) 
         return resp
 
     def login(self, name, password):
         """Авторизация пользователя с именем name и паролем password"""
-        resp = self.client.post('/login/', data={'username': name, 'password': password}) 
+        resp = self.client.post('/auth/', data={'username': name, 'password': password}) 
         return resp
-        
-    def test_unouthorithe_hello(self):
-        """Тестирование обращения по адресу hello не авторизованным пользователем"""
-        resp = self.client.post('/hello/')
-        self.assertEqual(resp.status_code, 401)
-
-    def test_authorize_hello(self):
-        """Тестирование обращения по адресу hello с возвратом данных авторизованным пользователем"""
-        resp = self.login('Username3', 'password3')
-        json_data = json.decoder.JSONDecoder().decode(resp.content.decode("utf-8"))
-        token = json_data["token"]
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-        resp = self.client.post('/hello/', data="adsgfsgfs", content_type="text/plain")
-        self.assertEqual(resp.content, b'\"adsgfsgfs\"')
     
     def test_correct_signup(self):
         """Тестирование регистрации пользователя с корректными данными"""
@@ -73,9 +59,6 @@ class UserListViewTest(TestCase):
     def test_signup_with_incorrect_credentials(self):
         """Тестирование регистрации пользователя с несоответствующими шаблону данными"""
         self.client.raise_request_exception = True
-        # Логин больше 12 символов
-        resp = self.signup('Username412313432113', 'password6')
-        self.assertEqual(resp.status_code, 401)
         # Пароль больше 12 символов
         resp = self.signup('Username7', 'password63875389310')
         self.assertEqual(resp.status_code, 401)
@@ -94,7 +77,5 @@ class UserListViewTest(TestCase):
             
     def test_signup_authogenerate_credentials(self):
         """Тестирование регистрации автосгенерированного пользователя"""
-        resp = self.client.post('/signup/?thinkforme=true') 
+        resp = self.client.post('/register/?thinkforme=true') 
         self.assertEqual(resp.status_code, 201)
-
-    
