@@ -1,5 +1,5 @@
 [client]
 database = test_users
-user =  root
-password = root
+user =  litres
+password = litres
 default-character-set = utf8
