@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
-import pymysql
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,17 +85,16 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': 'db.cnf',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_db',
+        'USER' : 'litres',
+        'PASSWORD' : 'litres',
+        'HOST' : '127.0.0.1',
+        'PORT' : '5432',
         },
-    }
 }
 
-pymysql.version_info=(1,4,2,"final",0)
-pymysql.install_as_MySQLdb()
-
-if 'test' in sys.argv:
+if 'in_memory_test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
     }
