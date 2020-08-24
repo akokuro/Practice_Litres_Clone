@@ -28,7 +28,7 @@ class Parser():
 
     def parse_book(self, url):
         """Возвращает название, автора и описание книги из страницы с адресом url"""
-        url = Parser.site_adress + url
+        url = Parser.site_adress + url[1]
         response = requests.get(url)
         soup = BeautifulSoup(response.content, "lxml")
         title = soup.find("meta",  property="og:title")["content"]
