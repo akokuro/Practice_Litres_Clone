@@ -33,21 +33,26 @@ class JWTAuthentication(authentication.BaseAuthentication):
         """
         request.user = None
 
+        token = self.get_token_from_headers(request)
+        if token == None:
+            token = self.get_token_from_cookie(request)
+        if token == None:
+            return None
+        # By now, we are sure there is a *chance* that authentication will
+        # succeed. We delegate the actual credentials authentication to the
+        # method below.
+        return self._authenticate_credentials(request, token)
+
+    def get_token_from_headers(self, request):
         # `auth_header` should be an array with two elements: 1) the name of
         # the authentication header (in this case, "Token") and 2) the JWT
-        # that we should authenticate against.
+    # that we should authenticate against.
+
         auth_header = authentication.get_authorization_header(request).split()
         auth_header_prefix = self.authentication_header_prefix.lower()
 
-        if not auth_header:
-            return None
 
-        if len(auth_header) == 1:
-            # Invalid token header. No credentials provided. Do not attempt to
-            # authenticate.
-            return None
-
-        elif len(auth_header) > 2:
+        if not auth_header or len(auth_header) != 2:
             # Invalid token header. The Token string should not contain spaces.
             # Do not attempt to authenticate.
             return None
@@ -64,11 +69,17 @@ class JWTAuthentication(authentication.BaseAuthentication):
             # The auth header prefix is not what we expected. Do not attempt to
             # authenticate.
             return None
+        return token
 
-        # By now, we are sure there is a *chance* that authentication will
-        # succeed. We delegate the actual credentials authentication to the
-        # method below.
-        return self._authenticate_credentials(request, token)
+
+    def get_token_from_cookie(self, request):
+        """
+        Пытается получить токен из кук, возвращает токен или None
+        """
+        token = None
+        if self.authentication_header_prefix in request.COOKIES:
+            token = request.COOKIES[self.authentication_header_prefix]
+        return token
 
     def _authenticate_credentials(self, request, token):
         """

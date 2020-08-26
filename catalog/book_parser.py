@@ -3,8 +3,10 @@ import time
 import requests
 import threading
 from bs4 import BeautifulSoup
-
+import logging
 from .models import Book
+
+log = logging.getLogger(__name__)
 
 class Parser():
 
@@ -44,8 +46,8 @@ class Parser():
         """Парсит переданные ссылки, 
         сохраняет полученное описание книги в бд"""
         for url in enumerate(urls):
+            log.info(f"parse book from {url}")
             self.save_book_in_bd(*self.parse_book(url))
-
 
     def save_books_in_bd(self):
         """Получает ссылки на все книги,
@@ -55,6 +57,7 @@ class Parser():
         threads = list()
         size = len(urls)
         thread_count = 20
+        log.info("start books parsing")
         for index in range(thread_count):
             start = size // thread_count * index
             stop = min(size // thread_count * (index + 1), size)

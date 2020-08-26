@@ -52,21 +52,25 @@ class RegistrationAPIView(APIView):
             username = MyUser.objects.make_random_username()
             password = MyUser.objects.make_random_password()
             serializer = self.register_user(username,password)
-            return Response(
+            response = Response(
                 {"username":username,
                 "password":password,
                 "token": serializer.data.get("token", None),
                 },
                 status=status.HTTP_201_CREATED,
             )
+            response.set_cookie("Token", serializer.data.get("token", None))
+            return response
         else:   
             serializer = self.register_user(request.data.get("username"), request.data.get("password"))
-            return Response(
+            response = Response(
                 {
                     'token': serializer.data.get('token', None),
                 },
                 status=status.HTTP_201_CREATED,
             )
+            response.set_cookie("Token", serializer.data.get("token", None))
+            return response
 
 
 class LoginAPIView(APIView):
@@ -82,4 +86,6 @@ class LoginAPIView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response = Response(serializer.data, status=status.HTTP_200_OK)
+        response.set_cookie("Token", serializer.data.get("token", None))
+        return response

@@ -19,7 +19,7 @@ from rest_framework import viewsets
 class CatalogViewSet(viewsets.ModelViewSet):
     """Каталог книг"""
     permission_classes = [AllowAny]
-    renderer_classes = [JSONRenderer]
+    # renderer_classes = [JSONRenderer]
     queryset = Book.objects.all()
     serializer_class = CatalogSerializer
 

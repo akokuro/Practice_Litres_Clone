@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
+import pymysql
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'django_mysql',
     'django_extensions',
     'rest_framework',
+    'rest_framework_swagger',
+    'drf_yasg',
     'blog',
     'catalog',
     'comment',
@@ -85,14 +88,18 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_db',
-        'USER' : 'litres',
-        'PASSWORD' : 'litres',
-        'HOST' : '127.0.0.1',
-        'PORT' : '5432',
+         'ENGINE': 'django.db.backends.mysql',
+         'OPTIONS': {
+            'read_default_file': 'db.cnf',
         },
+    }
 }
+
+
+
+pymysql.version_info=(1,4,2,"final",0)
+pymysql.install_as_MySQLdb()
+
 
 if 'in_memory_test' in sys.argv:
     DATABASES['default'] = {
@@ -156,7 +163,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'test_auth.backends.JWTAuthentication',
         ),
-    'EXCEPTION_HANDLER': 'test_auth.views.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'test_auth.views.custom_exception_handler',
+    'DEFAULT_SCHEMA_CLASS':'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 AUTH_USER_MODEL = 'test_auth.MyUser'
