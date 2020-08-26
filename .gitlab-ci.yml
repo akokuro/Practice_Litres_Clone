@@ -28,6 +28,6 @@ run:
     - mkdir -p ~/.ssh
     - echo -e 'Host *\n\tStrictHostKeyChecking no\n\n' > ~/.ssh/config
     - rsync -avzP --delete-during -e 'sshpass -e ssh' --exclude 'venv' --exclude 'static' --exclude 'media' --exclude 'staticfiles' --exclude 'uwsgi.sock' . $USER@$HOST:/home/Practice_Litres_Clone/
-only:
+  only:
     - master
 
