@@ -101,7 +101,7 @@ pymysql.version_info=(1,4,2,"final",0)
 pymysql.install_as_MySQLdb()
 
 
-if 'in_memory_test' in sys.argv:
+if 'test' in sys.argv:
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
     }
