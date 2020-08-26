@@ -33,7 +33,6 @@ run:
     - rsync -avzP --delete-during -e 'sshpass -e ssh' --exclude 'venv' --exclude 'static' --exclude 'media' --exclude 'staticfiles' --exclude 'uwsgi.sock' . $USER@$HOST:/home/Practice_Litres_Clone/
     - sshpass -pfoobar ssh -o StrictHostKeyChecking=no $USER@$HOST supervisorctl restart Practice_Litres_Clone
     - sshpass -pfoobar ssh -o StrictHostKeyChecking=no $USER@$HOST nginx -s reload
-
-only:
+  only:
     - master
 
