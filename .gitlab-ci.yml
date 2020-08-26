@@ -6,6 +6,9 @@ stages:
 
 variables:
   SSHPASS: "$PASSWORD"
+  
+services:
+  - mysql:latest
 
 before_script:
   - python3 -V
