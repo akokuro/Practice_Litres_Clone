@@ -45,7 +45,7 @@ class Post(models.Model):
     headline = models.CharField(max_length=255)
     pub_date = models.DateTimeField()
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    content = models.CharField(max_length=4096)
+    content = models.TextField()
     
     # Сообщает Django, что класс BlogManager, определенный выше, 
     # должен управлять объектами этого типа.
